@@ -2,7 +2,7 @@
 
 #### A final project for Creative Coding: Large Systems @ Parsons School of Design 
 
-![socket.io-chatbot](pic.png)
+![socket.io-chatbot](pic.JPG)
 
 ###### notes to self:
 ###### cd into the folder in terminal
