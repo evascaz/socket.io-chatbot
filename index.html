@@ -1,0 +1,179 @@
+<!doctype html>
+<html>
+
+
+  <head>
+    <title>Socket.IO chat</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages li { padding: 5px 10px; }
+      #messages li:nth-child(odd) { background: #eee; }
+    </style>
+  </head>      
+
+  <body>
+  <div id="main">
+  </div>
+    <form action="">
+      <input id="m" autocomplete="off" />
+    </form> 
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>  
+<script>
+
+
+var socket = io.connect('localhost:3070');
+
+var text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+
+
+//socket Shit
+socket.on('open', function() {
+  console.log('connection established'); //shows socket is connected to server
+});
+
+socket.on('hello', function(data) {
+  console.log(data);
+})
+
+socket.on('svgData', function(data) {
+  console.log("svg data is:" + data.text + "," + data.xPosition + "," + data.yPosition);
+
+var newText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  newText.setAttribute('fill', '#0f0');
+  newText.setAttribute('x', data.xPosition);
+  newText.setAttribute('y', data.yPosition);
+  newText.textContent = data.text;
+  svg.appendChild(newText);
+  var main = document.getElementById('main');
+main.appendChild(svg);
+console.log(svg);
+      console.log("making svg yay");
+
+});
+
+
+//global variables
+var chatText = document.getElementById('m');
+
+
+    // People are sending in 
+
+    // when someone first connects it generates a random color to represents them 
+    // text box - listen to key stokes 
+
+
+    // mouse.click on the screen and it records the x,y coordinates
+    //svg is updated once the screen is clicked and coordinates are updated
+        
+
+    //instead of listening for .submit i'm listening for .click
+    //so we can extract the x,y coordinate values
+
+    //instead of .val i'm probably going to do something like 
+    // socket.emit('chat message', {x:mouseX, y:mouseY, color:localColorValue, text: textValue})
+
+  
+
+
+  $(function () {
+    var socket = io.connect('192.168.1.90:3070');
+
+    // $('form').click(function(){
+    //   socket.emit('chat message', function({
+    //     x:mouseX,
+    //     y:mouseY,
+    //     text: textValue;
+    //   });
+    //   return false;
+    // });
+
+  });
+
+document.addEventListener("click", printMousePos);
+
+function printMousePos(event) {
+  console.log("x:"+event.clientX);
+  console.log("y:"+event.clientY);
+  console.log(chatText.value);
+
+  //SVG Shit
+var width = window.innerWidth;
+var height = window.innerHeight;
+  svg.setAttribute('width', width);
+  svg.setAttribute('height', height);
+
+//if there is writing in the box, then do the rect thing. if not, do nothing.
+
+  if (chatText.value.length > 0) {
+  displayText(event.clientX, event.clientY, chatText.value);
+}
+
+};
+
+// function updateNewText(xPos, yPos, theText) {
+//   var newText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+
+// newText.setAttribute('fill', '#0f0');
+//   newText.setAttribute('x', xPos);
+//   newText.setAttribute('y', yPos);
+//   newText.textContent = theText;
+//   svg.appendChild(newText);
+
+//   socket.emit('textChanged', {
+//     text: theText,
+//     xPosition: xPos,
+//     yPosition: yPos
+//     });
+ 
+// }
+
+
+function displayText(xPos, yPos, theText) {
+
+  text.setAttribute('fill', '#000');
+  text.setAttribute('x', xPos);
+  text.setAttribute('y', yPos);
+  text.textContent = theText;
+
+  svg.appendChild(text);
+
+  //NOW EMIT THE SVG INFORMATION TO SOCKET
+ socket.emit('textChanged', {
+    text: theText,
+    xPosition: xPos,
+    yPosition: yPos
+    });
+
+
+
+var main = document.getElementById('main');
+main.appendChild(svg);
+console.log(svg);
+      console.log("making svg yay");
+
+}
+
+</script>
+
+<!--   $('form').submit(function(){
+      socket.emit('chat message', $('#m').val());
+      $('#m').val('');
+      return false;
+    });
+    socket.on('chat message', function(msg){
+
+      //this is where we update the svg document
+
+      $('#messages').append($('<li>').text(msg));
+    }); -->
+
+
+  </body>
+</html>
